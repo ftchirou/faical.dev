@@ -6,15 +6,15 @@ A few weeks ago, I started taking evening classes to learn the German language �
 
 [Spaced repetition](https://en.wikipedia.org/wiki/Spaced_repetition) is a learning method based on the fact that learning and retention are more effective when study sessions are spaced out over time: the pyschological [spacing effect](https://en.wikipedia.org/wiki/Spacing_effect).
 
-Concretely, spaced repetition is a learning technique in which knowledge about a material is broken down into a set of meaningful pairs of questions and answers. For each pair, the question is written  on the frond of a card and the answer is written at the back. The resulting cards are commonly called [flashcards](https://en.wikipedia.org/wiki/Flashcard). To review the materials, one simply has to go through every flashcard and try to answer the question on the front. Each card is reviewed again (repeated) after a certain amount of time `t` (the spacing) has elapsed. For each card, `t` is computed through a combination of time (when was the last time I reviewed this card?) and the difficulty of the card (how many times did I get this card wrong?). 
+Concretely, spaced repetition is a learning technique in which knowledge about a material is broken down into a set of meaningful pairs of questions and answers. For each pair, the question is written  on the front of a card and the answer is written at the back. The resulting cards are commonly called [flashcards](https://en.wikipedia.org/wiki/Flashcard). To review the materials, one simply has to go through every flashcard and try to answer the question on the front. Each card is reviewed repeatedly after a certain amount of time `t` has elapsed. For each card, `t` is computed through a combination of time (when was the last time I reviewed this card?) and the difficulty of the card (how many times did I get this card wrong?). 
 
 This is a huge over-simplification, we will refine our definition and understanding of spaced repetition throughout our implementations in Swift.
 
 ## A basic spaced repetition program in Swift
 
-One of the most efficient spaced repetition algorithms is called  [SuperMemo](https://help.supermemo.org/wiki/SuperMemo_Algorithm). SuperMemo is the basis of many spaced repetition softwares such as [Anki](https://apps.ankiweb.net), [Memrise](https://www.memrise.com), or ... [SuperMemo](https://www.supermemo.com/en).
+One of the most efficient spaced repetition algorithms is called  [SuperMemo](https://help.supermemo.org/wiki/SuperMemo_Algorithm), created by [Piotr Woźniak](https://en.wikipedia.org/wiki/Piotr_Woźniak_(researcher)). SuperMemo is the basis of many spaced repetition softwares such as [Anki](https://apps.ankiweb.net), [Memrise](https://www.memrise.com), or ... [SuperMemo](https://www.supermemo.com/en).
 
-SuperMemo is a complex algorithm but throughout this article and many more on the topics, we'll gain a good understanding of it by first implementing its very first version [SM-0](http://super-memory.com/english/ol/beginning.htm#Algorithm); and then adding the various improvements introduced by subsequent versions of the algorithm all the way up to [SM-18](https://supermemo.guru/wiki/Algorithm_SM-18) (SM-18 is the latest version of SuperMemo at the time this article is being written).
+In this article, we will start our journey of building a spaced repetition app by implementing the very first version of SuperMemo, [SM-0](http://super-memory.com/english/ol/beginning.htm#Algorithm). In subsequent articles, we will implement the various improvements introduced by newer versions of SuperMemo up to [SM-18](https://supermemo.guru/wiki/Algorithm_SM-18) (the latest version of SuperMemo at the time of writing this article).
 
 ## SM-0
 
@@ -148,11 +148,11 @@ func review(deck: Deck) {
 }
 ```
 
-This function does 3 things:
+This function does 3 things.
 
-- first, loops through all the cards in the deck in random order and for each card, prompts the user for the answer of the card. This continues until the user answers all the cards correctly; the set of cards being reduced, at each round, to those cards the user answered incorrectly
-- then, adds a record of this review in the database
-- and finally, creates a notification to be triggered some appropriate time in the future. The user will be prompted to review the same deck after interacting with the notification.
+- First, the function loops through all the cards in the deck in random order. For each card, the user is prompted for its answer. The looping continues until the user has provided the correct answers to all the cards.
+- Then, the function adds a record of the review in the database  by saving a `Repetition` value.
+- And finally, the function creates a notification to be triggered at some appropriate time in the future. The user will be prompted to review the same deck after interacting with the notification.
 
 As a final touch, we can group these functions into a top-level type `SuperMemo` ...
 
@@ -199,7 +199,7 @@ enum SuperMemo {
         }
   
         let repetitions = Current.database.repetitions(of: deck)
-        return recurse(repetitions) * 86400 // There are 86400 seconds in a day.
+        return recurse(repetitions.count) * 86400 // There are 86400 seconds in a day.
     } 
 }
 ```
@@ -210,9 +210,7 @@ Et voilà! We have the core of *SM-0* up and running. We can use it as follows.
 SuperMemo.review(deck: germanIrregularVerbs)
 ```
 
-Assuming I reviewed the german irregular verbs once already, this function call will aid me in reviewing them a second time and will create a third review notification that will be presented to me in 7 days.
-
-This basic algorithm helped [Piotr Woźniak](https://en.wikipedia.org/wiki/Piotr_Woźniak_(researcher)), the creator of SuperMemo, to learn 7190 new English items, for 12 minutes a day, with a knowledge retention of 80% at worst. Pretty good, right?
+Assuming I reviewed the German irregular verbs once already, this function call will aid me in reviewing them a second time and will create a third review notification that will be presented to me in 7 days.
 
 ## Next steps
 
