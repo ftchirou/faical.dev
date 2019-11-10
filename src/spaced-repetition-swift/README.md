@@ -1,4 +1,4 @@
-# Build a spaced repetition app in Swift and SwiftUI
+# Build a spaced repetition app in Swift and SwiftUI: First Steps
 
 A few weeks ago, I started taking evening classes to learn the German language 🇩🇪 and so far I've been loving it. I have always loved learning new languages, acquiring new vocabulary and idioms. Some ten years ago, I learnt English organically by consuming materials in English (technical books, articles, and talks, movies with subtitles etc.) and letting my brain build an intuition of the language over a period of many months and years. Today, however, due to the fast paced nature of my German classes and my various professional and social obligations, I don't have as much of a time to dedicate to learning German organically. So I decided to turn to a proven and effective learning method called [Spaced Repetition](https://en.wikipedia.org/wiki/Spaced_repetition). In addition, I thought this would be the perfect opportunity to learn [SwiftUI](https://developer.apple.com/xcode/swiftui/) by building a spaced repetition app to aid in my learning process.
 
