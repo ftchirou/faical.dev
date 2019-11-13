@@ -140,7 +140,7 @@ func review(deck: Deck) {
         date: Date()
     )
 
-    Current.notifer.createNotification(
+    Current.notifier.createNotification(
         withContent: "\(deck.count) cards available to review now!",
         triggeredAfter: nextInterval(for: deck),
         action: { self.review(deck: deck) }
@@ -180,7 +180,7 @@ enum SuperMemo {
             date: Date()
         )
 
-        Current.notifer.createNotification(
+        Current.notifier.createNotification(
             withContent: "\(deck.count) cards available to review now!",
             triggeredAfter: nextInterval(for: deck),
             action: { self.review(deck: deck) }
