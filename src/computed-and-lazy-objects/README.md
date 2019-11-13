@@ -24,7 +24,7 @@ var currentDate: Date {
 
 Problem solved? Not quite! `currentDate` will always evaluate to the current date until it is passed to a function or copied to another variable. At that point, it will evaluate to whatever value it was before being copied. In most cases, this is what we want but here, we want an instance created with `Date()` to always evaluate to the current date whenever and wherever accessed.
 
-To achieve the desired behavior, we can extract the shape of computed properties into a type. For `currentDate`, that shape is `{ Date() }`. It looks like a closure that takes zero parameter and returns a value of type `Date`. The type of that closure is `() -> Date`. Its type can be generalized to describe all closures that take zero parameter and return a value of type `T`: `() -> T`. Let's encapsulate that closure inside a type.
+To achieve the desired behavior, we can extract the shape of computed properties into a type. For `currentDate`, that shape is `{ Date() }`. It looks like a closure that takes zero parameter and returns a value of type `Date`. The type of that closure is `() -> Date`. Its type can be generalized to describe all closures that take zero parameter and return a value of type `T`: `() -> T`. Let's encapsulate that closure inside a `struct`.
 
 ```swift
 struct Computed<T> {
@@ -40,7 +40,7 @@ struct Computed<T> {
 }
 ```
 
-The initializer of `Computed` takes into a parameter a closure used to compute values of type `T`. Those computed values are accessible through the `value` property.
+The initializer of `Computed` takes as parameter a closure used to compute values of type `T`. Those computed values are accessible through the `value` property.
 
 Back to our example, we can use it as follows.
 
@@ -52,9 +52,9 @@ print(currentDate.value.timeIntervalSince1970) // prints 1573668565.854287
 print(currentDate.value.timeIntervalSince1970) // prints 1573668565.854409
 ```
 
-It works as expected. In addition, we can pass around `currentDate` to functions or copy it and its "computed" behavior will stay intact.
+It works as expected. In addition, we can pass around `currentDate` to functions or copy it and its "computed" behavior will remain intact.
 
-However, we have now introduced an indirection on the `Date` type. We need to call `.value` before getting access to the properties of the encapsulated `Date` object. It would be great if we could get rid of that indirection and treat a `Computed<Date>` object as if it was a `Date` object.
+However, we have now introduced an indirection on the `Date` type. We need to call `.value` before getting access to the properties of the encapsulated `Date` object. It would be great if we could get rid of that indirection and use a `Computed<Date>` object as if it was a `Date` object.
 
 Fortunately in Swift 5.1, we can do just that by using [key path dynamic member lookup](https://github.com/apple/swift-evolution/blob/master/proposals/0252-keypath-dynamic-member-lookup.md).
 
@@ -87,7 +87,7 @@ print(currentDate.timeIntervalSince1970) // prints 1573669687.484854
 print(currentDate.timeIntervalSince1970) // prints 1573669687.484977
 ```
 
-Et voilà! We can use any property available in `Date` on `Computed<Date>`. We can go one step further by adding any behavior that `T` has to `Computed<T>`. For example, below we make `Computed<T>` equatable whenever `T` is equatable.
+Et voilà! We can use any property available in `Date` on `Computed<Date>`. We can go one step further by adding any behavior that `T` has, to `Computed<T>`. For example, below we make `Computed<T>` equatable whenever `T` is equatable.
  
  ```swift
 extension Computed: Equatable where T: Equatable {
