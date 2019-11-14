@@ -1,6 +1,6 @@
 # Computed and Lazy types in Swift
 
-Swift allows us to define properties that associate values with a particular type. Some properties have interesting behaviors. For instance, [computed properties](https://docs.swift.org/swift-book/LanguageGuide/Properties.html#ID259) compute their value every time they're accessed and [lazy stored properties](https://docs.swift.org/swift-book/LanguageGuide/Properties.html#ID257) do not compute their value until the first time they're accessed. Just for fun, let's explore how Swift types can adopt similar behaviors. For example, can we create a "computed" `Date` type whose instances would always return the current date whenever they're accessed?
+Swift allows us to define properties that associate values with a particular type. Some properties have interesting behaviors. For instance, computed properties compute their value every time they're accessed and lazy stored properties do not compute their value until the first time they're accessed. Just for fun, let's explore how Swift types can adopt similar behaviors. For example, can we create a "computed" `Date` type whose instances would always return the current date whenever they're accessed?
 
 ## Computed Types
 
