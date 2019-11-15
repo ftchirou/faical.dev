@@ -1,10 +1,10 @@
-# faical.dev
+# ✍🏾 faical.dev
 
 This repository contains the source files of the articles I publish on my blog [https://faical.dev](https://faical.dev). I write my articles in [Markdown](https://daringfireball.net/projects/markdown/) and use a custom-made command line tool to manage and convert them to static HTML files.
 
 ## Workflow
 
-I wrote a command line tool in Swift called `article` to handle everything related to my blog; from scaffolding files and directories to generating static HTML files. My typical flow with `article` would be:
+I wrote a command line tool in Swift called [article](https://github.com/ftchirou/article) to handle everything related to my blog; from scaffolding files and directories to generating static HTML files. My typical flow with `article` would be:
 
 #### Create
 
