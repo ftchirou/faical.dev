@@ -1,6 +1,6 @@
 # Build a spaced repetition app in Swift: Handling difficulty
 
-In our [first article](../articles/spaced-repetition-swift.html) about spaced repetition, we put together an initial version of the SuperMemo algorithm in a couple of Swift lines. However, our algorithm is far from perfect. In particular, it does not account for how hard it is to learn an item, when calculating the interval of time after which the item should be reviewed. Ideally, difficult items should be reviewed more frequently than the easier ones. Let's explore, in this article, how SuperMemo 2 (SM-2) handles difficulty when computing repetition intervals.
+In our [first article](../articles/spaced-repetition-swift.html) about spaced repetition, we put together an initial version of the SuperMemo algorithm in a couple of Swift lines. However, our algorithm is far from perfect. In particular, it does not account for how hard it is to learn an item when calculating the interval of time after which the item should be reviewed. Ideally, difficult items should be reviewed more frequently than the easier ones. Let's explore, in this article, how SuperMemo 2 (SM-2) handles difficulty when computing repetition intervals.
 
 ## Easiness Factor (E-Factor)
 
@@ -41,7 +41,7 @@ enum ResponseQuality: Int, Comparable {
 }
 ```
 
-Using the quality of response, SM-2 re-calculates a card's *E-Factor* with the seemingly arbitrary following formula.
+Using the quality of response, SM-2 re-calculates a card's *E-Factor* with the following seemingly arbitrary formula.
 
 ```swift
 func computeEasiness(for card: Card, using quality: ResponseQuality) -> Double {
@@ -54,7 +54,7 @@ func computeEasiness(for card: Card, using quality: ResponseQuality) -> Double {
 }
 ```
 
-`clamp` is an extension function on `FloatingPoint` that "clamps" a value between a minimum and maximum. In the case of computing *E-Factors*, if the new value is less than 1.3, then we consider  it to be 1.3; and if the new value is greater than 2.5, we consider it to be 2.5.
+`clamp` is an extension function on `FloatingPoint` that "clamps" a value between a minimum and maximum. In the case of computing *E-Factors*, if the new value is less than 1.3, then we consider  it to be 1.3 and if the new value is greater than 2.5, we consider it to be 2.5.
 
 ```swift
 extension FloatingPoint {
@@ -70,7 +70,7 @@ extension FloatingPoint {
 
 With *E-Factor* and quality of response defined above, we can rewrite our initial implementation of SuperMemo to take into account each card's level of difficulty.
 
-We start by changing our `nextInterval` function to take a `Card` instead of a `Deck` in parameter. This is needed because in our new implementation, each card will have a different repetition interval based on its *E-Factor*.
+We start by changing our `nextInterval` function to take a `Card` instead of a `Deck` as its parameter. This is needed because in our new implementation, each card will have a different repetition interval based on its *E-Factor*.
 
 ```swift
 func nextInterval(for card: Card) -> TimeInterval {
@@ -87,7 +87,7 @@ func nextInterval(for card: Card) -> TimeInterval {
 }
 ```
 
-This includes adding a function on `Database` to return the total number of repetitions of a specific card a user has done.
+This includes adding a function on `Database`, to return the total number of repetitions of a specific card a user has done.
 
 ```swift
 protocol Database {
@@ -174,6 +174,6 @@ Similarly to our previous implementation, this new implementation loops through 
 
 ## Next steps
 
-We hugely improved our algorithm by introducing *E-Factors* in the equation for computing repetition intervals. However, that equation, along with the equation for computing *E-Factors*, seem quite arbitrary. They were deducted by means of trial and error by SuperMemo's author [Piotr Woźniak](https://en.wikipedia.org/wiki/Piotr_Woźniak_(researcher)). In newer articles about the topics, we'll explore how subsequent versions of SuperMemo improve those equations using concepts like *the matrix of optimal factors* or *the forgetting rate*.
+We hugely improved our algorithm by introducing *E-Factors* in the equation for computing repetition intervals. However, that equation, along with the equation for computing *E-Factors*, seems quite arbitrary. These equations were deducted by trial and error by SuperMemo's author [Piotr Woźniak](https://en.wikipedia.org/wiki/Piotr_Woźniak_(researcher)). In newer articles about the topics, we'll explore how subsequent versions of SuperMemo improve those equations using concepts like *the matrix of optimal factors* or *the forgetting rate*.
 
 Thanks for reading 👋.
