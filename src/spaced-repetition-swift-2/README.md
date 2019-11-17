@@ -1,6 +1,6 @@
 # Build a spaced repetition app in Swift: Handling difficulty
 
-In our [first article](../articles/spaced-repetition-swift.html) about spaced repetition, we put together an initial version of the SuperMemo algorithm in a couple of Swift lines. However, our algorithm is far from perfect. In particular, it does not account for how hard it is to learn an item, when calculating the interval of time after which the item should be reviewed. Ideally, difficult items should be reviewed more frequently than the easier ones. Let's explore, in this article, how next versions of SuperMemo handle difficulty when computing repetition intervals.
+In our [first article](../articles/spaced-repetition-swift.html) about spaced repetition, we put together an initial version of the SuperMemo algorithm in a couple of Swift lines. However, our algorithm is far from perfect. In particular, it does not account for how hard it is to learn an item, when calculating the interval of time after which the item should be reviewed. Ideally, difficult items should be reviewed more frequently than the easier ones. Let's explore, in this article, how SuperMemo 2 (SM-2) handles difficulty when computing repetition intervals.
 
 ## Easiness Factor (E-Factor)
 
@@ -27,8 +27,8 @@ enum ResponseQuality: Int, Comparable {
     // The user did not answer correctly but could recall the correct response.
     case incorrectButRecalled = 1
 
-    // The user did not answer correctly but the correct answer seemed easy to recall.
-    case incorrectButRecalledWithDifficulty = 2
+    // The user did not answer correctly but the correct answer could be recalled with some hesitation.
+    case incorrectButRecalledWithHesitation = 2
 
     // The user recalled the correct response, but with serious difficulty.
     case correctButRecalledWithDifficulty = 3
@@ -70,7 +70,7 @@ extension FloatingPoint {
 
 With *E-Factor* and quality of response defined above, we can rewrite our initial implementation of SuperMemo to take into account each card's level of difficulty.
 
-We start by changing our `nextInterval` function to take a `Card` instead of a `Deck` in parameter. This is needed because in our next version, each card will have a different repetition interval based on its *E-Factor*.
+We start by changing our `nextInterval` function to take a `Card` instead of a `Deck` in parameter. This is needed because in our new implementation, each card will have a different repetition interval based on its *E-Factor*.
 
 ```swift
 func nextInterval(for card: Card) -> TimeInterval {
@@ -174,6 +174,6 @@ Similarly to our previous implementation, this new implementation loops through 
 
 ## Next steps
 
-We hugely improved our algorithm by introducing *E-Factors* in the equation for computing repetition intervals. However, the formula for computing *E-Factors* seems quite arbitrary. The formula was deducted my means of trial and error by SuperMemo's author [Piotr Woźniak](https://en.wikipedia.org/wiki/Piotr_Woźniak_(researcher)). In newer articles about the topics, we'll explore how subsequent versions of SuperMemo improve that formula using concepts like *the matrix of optimal factors* or *the forgetting rate*.
+We hugely improved our algorithm by introducing *E-Factors* in the equation for computing repetition intervals. However, that equation, along with the equation for computing *E-Factors*, seem quite arbitrary. They were deducted by means of trial and error by SuperMemo's author [Piotr Woźniak](https://en.wikipedia.org/wiki/Piotr_Woźniak_(researcher)). In newer articles about the topics, we'll explore how subsequent versions of SuperMemo improve those equations using concepts like *the matrix of optimal factors* or *the forgetting rate*.
 
 Thanks for reading 👋.
