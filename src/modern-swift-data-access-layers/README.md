@@ -658,7 +658,7 @@ class MovieRepositoryTests: XCTestCase {
 
 Using Swift's powerful type system and basic building blocks such as key paths, enumerations, or operator overloads, we designed an expressive, flexible and testable data access layer that can be extended with relatively low-effort. For example, we can add support for new types of predicates (`startsWith`, `endsWith`, `between`, `like`, `matches` etc.), build a more robust error handling mechanism, or again build a query optimizer (for more fun stuff).
 
-Using the [plethora of operators](https://developer.apple.com/documentation/combine/publisher#3232891) available on publishers, the functions in `Store` can be composed and/or combined together to express complex business logic without loosing the readability and testability of the code.
+Using the [plethora of operators](https://developer.apple.com/documentation/combine/publisher#3232891) available on publishers, the functions in `Store` can be composed and/or combined together to express complex business logic without losing the readability and testability of the code.
 
 We did not explore how to implement a practical `Store` but it is not fundamentally different from our `MovieStoreMock` implementation. The most exciting part would be the implementation of `execute` where `Predicate` objects need to be transformed into store-specific predicates (e.g. `NSPredicate` for CoreData, URL query parameters, or `WHERE` clauses for SQL based databases). Maybe the topic of a future article 😉.
 
