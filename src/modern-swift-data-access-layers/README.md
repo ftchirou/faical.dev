@@ -1,8 +1,8 @@
 # Designing modern data access layers in Swift
 
-During the process of building our applications, we are often faced with the need of persisting and querying model objects  in some form of store. The store can be a remote server, a local CoreData or Realm database, a set of files, or even a PostgreSQL or MySQL database (if the models are shared between the server and client code). It is also not uncommon to have to manage a combination of 2 or more stores (e.g. saving to a remote server and to CoreData at the same time and retrieving from CoreData when there is no internet connectivity). 
+During the process of building our applications, we are often faced with the need of persisting and querying model objects  in some form of store. The store can be a remote server, a local CoreData database, a set of files, or even a PostgreSQL or MySQL database (if the models are shared between the server and client code). It is also not uncommon to have to manage a combination of 2 or more stores (e.g. saving to a remote server and to CoreData at the same time and retrieving from CoreData when there is no internet connectivity). 
 
-In this article, we'll explore how using Swift features such as [protocols](https://docs.swift.org/swift-book/LanguageGuide/Protocols.html), [generics](https://docs.swift.org/swift-book/LanguageGuide/Generics.html), [enumerations](https://docs.swift.org/swift-book/LanguageGuide/Enumerations.html), and [key paths](https://developer.apple.com/documentation/swift/keypath), we can build expressive, type-safe and testable data access layers.
+In this article, we'll explore how using Swift features such as [protocols](https://docs.swift.org/swift-book/LanguageGuide/Protocols.html), [generics](https://docs.swift.org/swift-book/LanguageGuide/Generics.html), [enumerations](https://docs.swift.org/swift-book/LanguageGuide/Enumerations.html), and [key paths](https://github.com/apple/swift-evolution/blob/master/proposals/0161-key-paths.md), we can build expressive, type-safe and testable data access layers.
 
 ## Abstracting the Store
 
@@ -17,11 +17,8 @@ protocol Store {
     associatedtype Object
     
     func insert(_ object: Object) -> Future<Object, Error>
-
     func update(_ object: Object) -> Future<Object, Error>
-
     func delete(_ object: Object) -> Future<Object, Error>
-
     func execute(_ query: ???) -> Future<[Object], Error>
 }
 ```
@@ -50,7 +47,7 @@ For our `Query` type to be useful, at a minimum it needs to have capabilities fo
 
 Filtering is restricting the set of all the objects in the store to a smaller set of objects satisfying a predicate.
 
-Let's start by adding an enumeration to represent predicates.
+Let's create an enumeration to represent predicates.
 
 ```swift
 enum Predicate {
@@ -181,7 +178,7 @@ let movies = movieStore.filter(where: \.title == "Pulp Fiction")
 Much better! This version is not only more expressive than the previous one, it is also more type-safe. Indeed, the signature of our equality operator above, `== <T, U: Equatable & Primitive> (lhs: KeyPath<T, U>, rhs: U)`, gives us two guarantees at compile time.
 
 - The value of the property on the left hand side of the operator, and the value on the right hand side have the same type (`U`).
-- Both values are actually `Equatable`.
+- Both values can be tested for equality.
 
 These compile-time guarantees prevent us from writing code such as: 
 
@@ -296,7 +293,7 @@ let movieStore: Store
 movieStore.filter(where: !(\.rating == .PG_13))
 ```
 
-Using Swift powerful type system and features such as enumerations, generics, operator overloading and key paths, we built a powerful and expressive API for filtering objects in a store. Next up to complete our `Query` type: *sorting*.
+So far, we've built a pretty good and expressive API for filtering objects in a store. Next up to complete our `Query` type: *sorting*.
 
 #### Sorting
 
@@ -400,10 +397,10 @@ Let's again assume that we're building a personal movie database app and that we
 - Users can add and edit movies in the database
 - Users can fetch a specific movie using its id
 - Users can filter movies based on their rating, their release date or any other movie's property
-- All the operations above are made by performing HTTP requests against an API
-- All the operations above should be mirrored in a local database from which movies will be fetched in case an error occurs with the remote store (e.g. when the internet connectivity is not available).
+- All the operations above are made by sending HTTP requests to an API
+- All the write operations above (add and edit) should be mirrored in a local database from which movies will be fetched in case an error occurs with the remote store (e.g. when the internet connectivity is not available).
 
-Using our `Store` abstraction, implementing these features in an expressive way should be straightforward.
+Using our `Store` abstraction, implementing these features should be straightforward.
 
 We start by creating a type `MovieRepository`.
 
@@ -584,7 +581,7 @@ Our mock store uses a simple array of `Movie` as its underlying storage. `insert
 
 ```swift
 extension Predicate {
-    func isIncluded() -> (T) -> Bool {
+    fileprivate func isIncluded() -> (T) -> Bool {
         switch self {
         case let .comparison(keyPath, .greaterThan, value):
             return { $0[keyPath: keyPath] > value }
@@ -616,7 +613,7 @@ extension Predicate {
 
 `isIncluded` simply transforms the predicate into a closure that takes an object of type `T` in parameter and returns `true` if the object satisfies the predicate.
 
-Using this mock, unit testing `MovieRepository` becomes very straightforward.
+Using this mock, unit testing `MovieRepository` becomes very straightforward. Below is a test to ensure that adding a movie to the remote store, also adds it to the local store.
 
 ```swift
 import XCTest
@@ -636,7 +633,7 @@ class MovieRepositoryTests: XCTestCase {
         let movie: Movie = makeMovie(/* ... */)
         
         // When
-        let cancellable = repository
+        _ = repository
             .add(movie)
             .sink(
                 receiveCompletion: { _ in expectation.fulfill() },
@@ -658,11 +655,11 @@ class MovieRepositoryTests: XCTestCase {
 
 ## Conclusion
 
-Using Swift's powerful type system and basic building blocks such as key paths, enumerations, or operator overloads, we designed an expressive, flexible and testable data access layer that can be extended with relatively low-effort. For example, we can add support for new types of predicates (`startsWith`, `endsWith`, `between`, `like`, `matches` etc.), add support for query result pagination, build a more robust error handling mechanism, or again build a query optimizer (for more fun stuff).
+Using Swift's powerful type system and features such as key paths, generics, enumerations, or operator overloads, we designed an expressive, flexible and testable data access layer that can be extended with relatively low-effort. For example, we can add support for new types of predicates (`startsWith`, `endsWith`, `between`, `like`, `matches` etc.), add support for query result pagination, build a more robust error handling mechanism, or again build a query optimizer (for more fun stuff).
 
 Using the [plethora of operators](https://developer.apple.com/documentation/combine/publisher#3232891) available on publishers, the functions in `Store` can be composed and/or combined together to express complex business logic without losing the readability and testability of the code.
 
-We did not explore how to implement a practical `Store` but it is not fundamentally different from our `MovieStoreMock` implementation. The most exciting part would be the implementation of `execute` where `Predicate` values need to be transformed into store-specific predicates (e.g. `NSPredicate` for CoreData, URL query parameters, or `WHERE` clauses for SQL based databases). Maybe the topic of a future article 😉.
+We did not explore how to implement a practical `Store` but it is not fundamentally different from our `MovieStoreMock` implementation. The interesting part would be the implementation of `execute` where `Predicate` values need to be transformed into store-specific predicates (e.g. `NSPredicate` for CoreData, URL query parameters, or `WHERE` clauses for SQL based databases). Maybe the topic of a future article 😉.
 
 Do you have a comment, a suggestion or a question? Feel free to ping me on [Twitter](https://twitter.com/ftchirou).
 
