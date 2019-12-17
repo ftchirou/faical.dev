@@ -85,9 +85,9 @@ enum Operator {
 
 Our comparison predicate has 3 components:
 
-- a `PartialKeyPath<T>` representing the property (on an object of type `T`) to compare. Using a type-safe [key path](https://github.com/apple/swift-evolution/blob/master/proposals/0161-key-paths.md) guarantees at compile time that the property being used in the comparison, actually exists on the object.
-- an `Operator`, an enum value representing describing the operator to use for the comparison
-- and a custom-made protocol [Primitive]() representing the value to compare against the `PartialKeyPath<T>`. The `Primitive` protocol ensures that only simple primitive values (integers, strings, dates etc.) are used in a comparison predicate.
+- a `PartialKeyPath<T>` representing the property (on an object of type `T`) to compare. Using a [key path](https://github.com/apple/swift-evolution/blob/master/proposals/0161-key-paths.md) guarantees at compile time that the property being used in the comparison, actually exists on the object.
+- an `Operator`, an enum value describing the operator to use for the comparison
+- and a [Primitive](https://gist.github.com/ftchirou/989f9cc8293ea5a0e72200fae51ae5af) representing the value to compare against the `PartialKeyPath<T>`. Using the `Primitive` protocol ensures that only primitive types or types with primitive raw values (integers, strings, dates etc.) can be used in a comparison predicate.
 
 The use of `PartialKeyPath<T>` forces us to specialize `Predicate` with the object on which the predicate will apply. And because `Predicate` is now generic, `Query` will also have to be specialized with the type of the objects being queried. 
 
@@ -115,12 +115,9 @@ So far so good. Assuming we have the following types defined,
 struct Movie {
     let id: Id
     let title: String
-    let overview: String
     let genre: String
-    let releaseDate: Date
     let budget: Double
     let rating: Rating
-    let isPopular: Bool
     
     typealias Id = String
 }
@@ -179,7 +176,7 @@ let movieStore: Store
 let movies = movieStore.filter(where: \.title == "Pulp Fiction")
 ```
 
-This version is not only more expressive than the previous one, it is also more type-safe. Indeed, the signature of our equality operator above, `== <T, U: Equatable & Primitive> (lhs: KeyPath<T, U>, rhs: U)`, gives us two guarantees at compile time.
+Much better! This version is not only more expressive than the previous one, it is also more type-safe. Indeed, the signature of our equality operator above, `== <T, U: Equatable & Primitive> (lhs: KeyPath<T, U>, rhs: U)`, gives us two guarantees at compile time.
 
 - The value of the property on the left hand side of the operator, and the value on the right hand side have the same type (`U`).
 - Both values are actually `Equatable`.
@@ -191,7 +188,7 @@ These compile-time guarantees prevent us from writing code such as:
 let movies = movieStore.filter(where: \.title == 200)
 ```
 
-To complete the comparison predicate, let's overload the other comparison operators.
+To complete the comparison predicate, let's add overloads for the remaining comparison operators.
 
 ```swift
 func < <T, U: Comparable & Primitive> (lhs: KeyPath<T, U>, rhs: U) -> Predicate<T> {
@@ -392,7 +389,7 @@ Our store abstraction is now complete. We have simple functions for creating, up
 
 ## Up the Ladder of Abstraction
 
-Now that we have a pretty good abstraction of the storage layer, it's time to climb up the ladder of abstraction and explore how we can build expressive, flexible and testable components on top of our `Store`.
+Now that we have a pretty good abstraction of the low-level storage layer, it's time to climb up the ladder of abstraction and explore how we can build expressive, flexible and testable components on top of `Store`.
 
 ### Implementing business rules
 
@@ -415,7 +412,7 @@ struct MovieRepository<RemoteStore: Store, LocalStore: Store> where RemoteStore.
 }
 ```
 
-`MovieRepository` can be specialized with 2 types of `Store`. A `RemoteStore` for performing operations against a REST API and a `LocalStore` for performing operations against a local database.
+`MovieRepository` is specialized with 2 types of `Store`. A `RemoteStore` for performing operations against a REST API and a `LocalStore` for performing operations against a local database.
 
 Next, we implement our features.
 
@@ -501,7 +498,7 @@ struct MovieRepository<RemoteStore: Store, LocalStore: Store> where RemoteStore.
 }
 ```
 
-Retrieving a specific movie by its id is as simple as calling `filter` and passing the equality predicate `\.id == id` in parameter.
+Retrieving a specific movie by its id is as simple as calling `filter` and passing the equality predicate `\.id == id` in parameter. Because `filter` emits a `[Movie]` (and we're only interested in the first element), we use the [map](https://developer.apple.com/documentation/combine/publisher/3204718-map) operator to get the first element of the array.
 
 We use the [catch](https://developer.apple.com/documentation/combine/publisher/3204690-catch) operator to retrieve the movie from the local store if an error occurs while retrieving from the remote store.
 
@@ -531,7 +528,7 @@ struct MovieRepository<RemoteStore: Store, LocalStore: Store> where RemoteStore.
 
 Finally, we add a function to fetch movies matching any predicate. Similarly to fetching a movie by its id, we use the [catch](https://developer.apple.com/documentation/combine/publisher/3204690-catch) operator to perform the query in the local store if any error occurs with the remote store.
 
-We just built a flexible movie repository that can be configured with any store without changing a single line of its implementation. The underlying stores could even potentially be swapped at runtime. The logic of saving and filtering movies is clearly separated from the specifics to how the saving and filtering is done. 🎉
+We just built a flexible movie repository that can be configured with any store without changing a single line of its implementation. The underlying stores could even potentially be swapped at runtime. The logic of saving and filtering movies is clearly separated from the specifics to how the saving and filtering are done. 🎉
 
 ### Testing
 
