@@ -2,13 +2,13 @@
 
 During the process of building our applications, we are often faced with the need of persisting and querying model objects  in some form of store. The store can be a remote server, a local CoreData or Realm database, a set of files, or even a PostgreSQL or MySQL database (if the models are shared between the server and client code). It is also not uncommon to have to manage a combination of 2 or more stores (e.g. saving to a remote server and to CoreData at the same time and retrieving from CoreData when there is no internet connectivity). 
 
-In this article, we'll explore how, using Swift features such as [Protocols](https://docs.swift.org/swift-book/LanguageGuide/Protocols.html), [Generics](https://docs.swift.org/swift-book/LanguageGuide/Generics.html), [Enums](https://docs.swift.org/swift-book/LanguageGuide/Enumerations.html), [KeyPaths](https://developer.apple.com/documentation/swift/keypath), etc. and frameworks such as [Combine](https://developer.apple.com/documentation/combine), we can build expressive, type-safe and testable data access layers.
+In this article, we'll explore how using Swift features such as [protocols](https://docs.swift.org/swift-book/LanguageGuide/Protocols.html), [generics](https://docs.swift.org/swift-book/LanguageGuide/Generics.html), [enumerations](https://docs.swift.org/swift-book/LanguageGuide/Enumerations.html), and [key paths](https://developer.apple.com/documentation/swift/keypath), we can build expressive, type-safe and testable data access layers.
 
 ## Abstracting the Store
 
 Our first step is to abstract the store in a simple and expressive collection-like API for interacting with persisted objects.
 
-Fundamentally, a store is simply an entity that allows [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) operations. Whether it is a web service, a PostgreSQL database, or even a set of files on the disk, a store should allow to insert, update, delete objects; and to perform queries to search or filter the persisted objects.
+Fundamentally, a store is simply an entity that allows [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) operations. Whether it is a web service, a PostgreSQL database, or even a set of files on the disk, a store should allow a user to insert, update, delete objects; and to perform queries to search or filter the persisted objects.
 
 We can start by wrapping that definition in a protocol.
 
@@ -26,11 +26,11 @@ protocol Store {
 }
 ```
 
-We defined an associated type `Object` representing the objects the `Store` can handle and we defined a function for each one of the CRUD operations.
+We defined an associated type `Object` representing the objects the `Store` can handle. We also defined a function for each one of the CRUD operations.
 
-Because CRUD operations can be asynchronous, each function returns a [Future](https://developer.apple.com/documentation/combine/future) object, a [Publisher](https://developer.apple.com/documentation/combine/publisher) that produces a value some time in the future and finishes or fails with an error.
+Because CRUD operations can be asynchronous, each function returns a [Future](https://developer.apple.com/documentation/combine/future) object. A `Future` is a [Publisher](https://developer.apple.com/documentation/combine/publisher) that produces a value some time in the future and finishes or fails with an error.
 
-Creating, updating and deleting objects are simple enough to express in Swift. The most interesting part would be to design a type-safe and expressive API for querying the stored objects. Let's get to it!
+Creating, updating and deleting objects are simple enough operations to express in Swift. The most interesting part will be to design a type-safe and expressive API for querying the stored objects. Let's get to it!
 
 ### Querying the Store
 
@@ -41,21 +41,23 @@ struct Query {
 }
 ```
 
-For our `Query` type to be useful, it needs to have capabilities for, at a minimum:
+For our `Query` type to be useful, at a minimum it needs to have capabilities for:
 
 - *filtering* using predicates on one or more of the stored objects properties
 - and *sorting* by on one or more of the stored objects properties.
 
 #### Filtering
 
-Filtering is restricting the set of all the objects in the store to a smaller set of objects satisfying a predicate. Let's start by adding an enumeration to represent predicates.
+Filtering is restricting the set of all the objects in the store to a smaller set of objects satisfying a predicate.
+
+Let's start by adding an enumeration to represent predicates.
 
 ```swift
 enum Predicate {
 }
 ```
 
-And add a reference to it in our `Query` type.
+And add a reference to the enumeration in our `Query` type.
 
 ```swift
 struct Query {
@@ -385,7 +387,7 @@ movieStore
     .result()
 ```
 
-Our store abstraction is now complete. We have simple functions for creating, updating and deleting objects. And we have an equally simple and expressive API for filtering and sorting the sorted objects.
+Our store abstraction is now complete. We have simple functions for creating, updating and deleting objects. And we have an equally simple and expressive API for filtering and sorting the stored objects.
 
 ## Up the Ladder of Abstraction
 
@@ -444,7 +446,7 @@ struct MovieRepository<RemoteStore: Store, LocalStore: Store> where RemoteStore.
 
 We simply call `insert(_:Movie)` on the remote store and we use [handleEvents](https://developer.apple.com/documentation/combine/publisher/3204713-handleevents) to intercept the `Movie` emitted and insert it in the local store (by calling the private helper `addLocally(_:Movie)`).
 
-We erase the returned value to the type `AnyPublisher<Movie, Error>` because, at the call site, we're not concerned about the exact type of the returned publisher. And because the initial publisher (`Future<Object, Error>`) can potentially go through many transformations, each one changing its type.
+We erase the returned value to the type `AnyPublisher<Movie, Error>` because at the call site, we're not concerned about the exact type of the returned publisher. Also because the initial publisher (`Future<Object, Error>`) can potentially go through many transformations, each one changing its type.
 
 ##### Update a movie
 
@@ -500,7 +502,7 @@ struct MovieRepository<RemoteStore: Store, LocalStore: Store> where RemoteStore.
 
 Retrieving a specific movie by its id is as simple as calling `filter` and passing the equality predicate `\.id == id` in parameter. Because `filter` emits a `[Movie]` (and we're only interested in the first element), we use the [map](https://developer.apple.com/documentation/combine/publisher/3204718-map) operator to get the first element of the array.
 
-We use the [catch](https://developer.apple.com/documentation/combine/publisher/3204690-catch) operator to retrieve the movie from the local store if an error occurs while retrieving from the remote store.
+We use the [catch](https://developer.apple.com/documentation/combine/publisher/3204690-catch) operator to retrieve the movie from the local store, if an error occurs while retrieving from the remote store.
 
 ##### Fetch all movies matching a predicate
 
@@ -528,7 +530,7 @@ struct MovieRepository<RemoteStore: Store, LocalStore: Store> where RemoteStore.
 
 Finally, we add a function to fetch movies matching any predicate. Similarly to fetching a movie by its id, we use the [catch](https://developer.apple.com/documentation/combine/publisher/3204690-catch) operator to perform the query in the local store if any error occurs with the remote store.
 
-We just built a flexible movie repository that can be configured with any store without changing a single line of its implementation. The underlying stores could even potentially be swapped at runtime. The logic of saving and filtering movies is clearly separated from the specifics to how the saving and filtering are done. 🎉
+We just built a flexible movie repository that can be configured with any store without changing a single line of its implementation. The underlying stores could even potentially be swapped at runtime. The logic of saving and filtering movies is clearly separated from the specifics of how the saving and filtering are done. 🎉
 
 ### Testing
 
@@ -656,11 +658,11 @@ class MovieRepositoryTests: XCTestCase {
 
 ## Conclusion
 
-Using Swift's powerful type system and basic building blocks such as key paths, enumerations, or operator overloads, we designed an expressive, flexible and testable data access layer that can be extended with relatively low-effort. For example, we can add support for new types of predicates (`startsWith`, `endsWith`, `between`, `like`, `matches` etc.), build a more robust error handling mechanism, or again build a query optimizer (for more fun stuff).
+Using Swift's powerful type system and basic building blocks such as key paths, enumerations, or operator overloads, we designed an expressive, flexible and testable data access layer that can be extended with relatively low-effort. For example, we can add support for new types of predicates (`startsWith`, `endsWith`, `between`, `like`, `matches` etc.), add support for query result pagination, build a more robust error handling mechanism, or again build a query optimizer (for more fun stuff).
 
 Using the [plethora of operators](https://developer.apple.com/documentation/combine/publisher#3232891) available on publishers, the functions in `Store` can be composed and/or combined together to express complex business logic without losing the readability and testability of the code.
 
-We did not explore how to implement a practical `Store` but it is not fundamentally different from our `MovieStoreMock` implementation. The most exciting part would be the implementation of `execute` where `Predicate` objects need to be transformed into store-specific predicates (e.g. `NSPredicate` for CoreData, URL query parameters, or `WHERE` clauses for SQL based databases). Maybe the topic of a future article 😉.
+We did not explore how to implement a practical `Store` but it is not fundamentally different from our `MovieStoreMock` implementation. The most exciting part would be the implementation of `execute` where `Predicate` values need to be transformed into store-specific predicates (e.g. `NSPredicate` for CoreData, URL query parameters, or `WHERE` clauses for SQL based databases). Maybe the topic of a future article 😉.
 
 Do you have a comment, a suggestion or a question? Feel free to ping me on [Twitter](https://twitter.com/ftchirou).
 
