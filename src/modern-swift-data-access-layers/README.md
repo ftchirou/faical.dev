@@ -258,7 +258,7 @@ movieStore.filter(where: \.rating == .PG_13 && \.budget >= 10_000_000)
 Similarly to AND predicates, we add OR predicates or logical disjunctions. OR predicates will allow us to query objects matching at least one of 2 or more predicates.
 
 ```swift
-enum Predicate<T> {
+indirect enum Predicate<T> {
     case comparison(PartialKeyPath<T>, Operator, Primitive)
     case and(Predicate<T>, Predicate<T>)
     case or(Predicate<T>, Predicate<T>)
@@ -274,7 +274,7 @@ func || <T> (lhs: Predicate<T>, rhs: Predicate<T>) -> Predicate<T> {
 We can also add a predicate that negates another predicate.
 
 ```swift
-enum Predicate<T> {
+indirect enum Predicate<T> {
     // ...
     case not(Predicate<T>)
 }
