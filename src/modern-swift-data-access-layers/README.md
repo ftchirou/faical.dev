@@ -203,7 +203,7 @@ func > <T, U: Comparable & Primitive> (lhs: KeyPath<T, U>, rhs: U) -> Predicate<
 }
 
 func >= <T, U: Comparable & Primitive> (lhs: KeyPath<T, U>, rhs: U) -> Predicate<T> {
-    .comparison(lhs, .greaterThanOrEqual, rhs)
+    .comparison(lhs, .greaterThanOrEqualTo, rhs)
 }
 ```
 
