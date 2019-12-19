@@ -344,7 +344,7 @@ struct Query<T: Store> {
 - `Query` is no longer generic on the type of the objects being queried, but on the type of the store in which the query will be executed. 
 - In addition to a reference to `Predicate`, `Query` now has a reference to `Store` and an array of `SortCriterion`.
 - To keep the API expressive, we add a function `sorted` that creates a copy of the current query, updates the sorting criteria of the copy with the provided arguments and returns that copy. This function also gives us the compile-time guarantee that the property to sort by is actually `Comparable` to values of the same type.
-- Again, for expressivity, we add a function `result` that simply calls executes `self` using the referenced `Store`.
+- Again, for expressivity, we add a function `result` that simply executes `self` using the referenced `Store`.
 
 To complete our sorting API, we need to change the signature of `execute` in `Store` and to update  `filter` to no longer return a `Future<[Object], Error>`, but a `Query<Self>` that can be executed at a later time.
 
