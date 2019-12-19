@@ -62,7 +62,7 @@ struct Query {
 }
 ```
 
-One of the most basic predicate we could express is a simple *comparison*. For example, in a personal movie database app, we could want to retrieve all the movies with a rating equal to PG-13. 
+One of the most basic predicates we could express is a *comparison*. For example, in a personal movie database app, we could want to retrieve all the movies with a rating equal to PG-13. 
 
 ##### Comparison Predicates
 
