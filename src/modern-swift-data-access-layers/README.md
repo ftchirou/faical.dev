@@ -302,7 +302,7 @@ To sort a list, we need a property to sort on and the order of the sort (ascendi
 ```swift
 struct SortCriterion<T> {
     let property: PartialKeyPath<T>
-    let order: SortOrder
+    let order: Order
 
     enum Order {
         case ascending
