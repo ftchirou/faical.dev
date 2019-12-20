@@ -587,7 +587,7 @@ extension Predicate {
             return { $0[keyPath: keyPath] > value }
 
         case let .comparison(keyPath, .greaterThanOrEqualTo, value):
-            return{ $0[keyPath: keyPath] >= value }
+            return { $0[keyPath: keyPath] >= value }
     
         case let .comparison(keyPath, .equalTo, value):
             return { $0[keyPath: keyPath] == value }
