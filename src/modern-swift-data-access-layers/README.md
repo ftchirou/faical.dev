@@ -326,15 +326,15 @@ struct Query<T: Store> {
 
     func sorted<U: Comparable>(
         by property: KeyPath<T.Object, U>, 
-        inOrder order: SortCriterion.Order = .ascending
+        inOrder order: SortCriterion<T.Object>.Order = .ascending
     ) -> Query<T> {
         return Query(
             store: store,
             predicate: predicate,
-            sortCriteria: sortCriteria + .init(
+            sortCriteria: sortCriteria + [SortCriterion(
                 property: keyPath,
                 order: order
-            )
+            )]
         )
     }
 }
