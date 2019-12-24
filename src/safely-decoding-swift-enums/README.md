@@ -68,7 +68,7 @@ struct Payment {
     }
 }
 
-extension Trip: Decodable {
+extension Payment: Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(String.self)
@@ -103,7 +103,7 @@ Fortunately, there is a better and cleaner solution.
  Next, since we want to use this protocol mostly in conjunction with enumerations, it might be a good idea to make it extend [RawRepresentable](https://developer.apple.com/documentation/swift/rawrepresentable). The compiler automatically adds a `RawRepresentable` conformance to any enumeration with a `string`, `integer` or floating point raw value. In addition, any enumeration that needs to be JSON-decoded will have to have an associated raw value.
  
  ```swift
-  protocol SafeDecodable: RawRepresentable, Decodable {
+ protocol SafeDecodable: RawRepresentable, Decodable {
      static var fallback: Self { get }
  }
  ```
