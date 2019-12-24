@@ -113,8 +113,8 @@ Fortunately, there is a better and cleaner solution.
  ```swift
  extension SafeDecodable where RawValue: Decodable {
     init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
         do {
+            let container = try decoder.singleValueContainer()
             let rawValue = try container.decode(RawValue.self)
             self = Self(rawValue: rawValue) ?? .fallback
         } catch {
