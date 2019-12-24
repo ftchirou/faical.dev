@@ -81,7 +81,7 @@ extension Payment: Decodable {
 }
 ``` 
 
-White technically correct, this solution presents 2 issues.
+While technically correct, this solution presents 2 issues.
 
 1. It is semantically redundant to make an enumeration optional. Because an optional is also an [enumeration](https://developer.apple.com/documentation/swift/optional), marking an enumeration as optional is akin to wrapping it into another. It would be more straightforward to just add a case `none` to the original enumeration. [Soroush Khanlou](https://twitter.com/khanlou) wrote a great article expanding on this, that is worth reading, [Enums And Optionals](http://khanlou.com/2018/04/enums-and-optionals/).
 2. This pattern would have to be repeated for every other enumeration we subsequently add in `Payment` and potentially for many other enumerations in the code base.
