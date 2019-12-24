@@ -151,7 +151,7 @@ let payments = try JSONDecoder()
     .decode([Payment].self)
     .filter { $0.type != .ignore }
 
-// Renders list of payments on the screen.
+// Renders a list of payments on the screen.
 render(payments: payments)
 ```
 
