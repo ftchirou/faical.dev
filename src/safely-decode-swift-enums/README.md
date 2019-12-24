@@ -2,7 +2,7 @@
 
 The JSON format often serves as data exchange format between our iOS applications and server side APIs. For instance, an iOS application makes an HTTP request and a server replies with a JSON payload in the response. To convert the JSON payload into model objects, the model types first have to conform to [Decodable](https://developer.apple.com/documentation/swift/decodable) and then the payload is decoded using a [JSONDecoder](https://developer.apple.com/documentation/foundation/jsondecoder). Everything works well enough until we have to decode an [enumeration](https://docs.swift.org/swift-book/LanguageGuide/Enumerations.html). 
 
-The problem with decoding enumerations lies within the fact that an enumeration's value in JSON is often encoded as a simple raw value (e.g. a `string` or an `integer`). The set of all the possible raw values that we can potentially have in JSON is almost unlimited. Whereas in the Swift world, the set of valid values of an enumeration is limited by the `case`s declared when defining the enumeration. In real-world applications, server side errors happen and we sometimes receive malformed raw values, empty strings or `null` values in lieu of valid enumeration values.
+The problem with decoding enumerations lies within the fact that an enumeration's value in JSON is often encoded as a simple literal (e.g. a `string` or an `integer`). The set of all the possible literals that we can potentially have in JSON is almost unlimited. Whereas in the Swift world, the set of valid values of an enumeration is limited by the `case`s declared when defining the enumeration. In real-world applications, server side errors happen and we sometimes receive malformed literals, empty strings or `null` values in lieu of valid enumeration values.
 
 In this article, we'll explore how to handle the unpredictability of an enumeration's value on the server side in the predictable world of Swift's enumerations.
 
@@ -48,9 +48,9 @@ Now let's say we receive the following JSON seemingly containing all valid `Paym
 ]
 ```
 
-The decoding of this JSON would fail because the second `Payment` object has a wrong type, `credit_card` instead of `credit-card`. If the JSON decoding instructions are wrapped inside a `try/catch`, our payment screen would end up in an unexpected state, probably displaying an empty table view. And if there is no `try/catch`, our whole app will crash while trying to render the JSON.
+The decoding of this JSON array will fail because the second `Payment` object has a wrong type, `credit_card` instead of `credit-card`. If the JSON decoding instructions are wrapped inside a `try/catch`, our payment screen would end up in an unexpected state, probably displaying an empty table view. And if there is no `try/catch`, our whole app will crash while trying to render the JSON.
 
-One single malformed `Payment` object made the payment screen unusable or worse, made the whole app crash. There are valid situations where we need to crash if we encounter such errors. For instances where we should not crash (like in our payment history screen), we need to somehow ignore the malformed objects in the payload or replace the malformed value with a fallback value.
+One single malformed `Payment` object made the payment screen unusable or worse, made the whole app crash. There are valid situations where we need to crash if we encounter such errors. For instances where we should not crash (like in our payment history screen), we need to somehow replace the malformed value with a fallback value or ignore the malformed objects in the payload.
 
 A common solution is to make the enumeration optional and to manually implement the `Decodable` conformance.
 
@@ -83,7 +83,7 @@ extension Payment: Decodable {
 
 While technically correct, this solution presents 2 issues.
 
-1. It is semantically redundant to make an enumeration optional. Because an optional is also an [enumeration](https://developer.apple.com/documentation/swift/optional), marking an enumeration as optional is akin to wrapping it into another. It would be more straightforward to just add a case `none` to the original enumeration. [Soroush Khanlou](https://twitter.com/khanlou) wrote a great article expanding on this, that is worth reading, [Enums And Optionals](http://khanlou.com/2018/04/enums-and-optionals/).
+1. It is semantically redundant to make an enumeration optional. Because an optional is also an [enumeration](https://developer.apple.com/documentation/swift/optional), marking an enumeration as optional is akin to wrapping it into another. It would be more straightforward to just add a case `none` to the original enumeration. [Soroush Khanlou](https://twitter.com/khanlou) wrote a nice article expanding on this,  [Enums And Optionals](http://khanlou.com/2018/04/enums-and-optionals/).
 2. This pattern would have to be repeated for every other enumeration we subsequently add in `Payment` and potentially for many other enumerations in the code base.
 
 Fortunately, there is a better and cleaner solution.
@@ -108,7 +108,7 @@ Fortunately, there is a better and cleaner solution.
  }
  ```
  
- Finally, we add a default implementation of `init(from: Decoder)` that will try to decode the `RawValue` of the `RawRepresentable`. If the decoding succeeds, it will try to create the `RawRepresentable` using [this init](https://developer.apple.com/documentation/swift/rawrepresentable/1538354-init). If there is any failure at any point, it will simply assign `fallback` to `self`.
+ Finally, we add a default implementation of `init(from: Decoder)` that will try to decode the `RawValue` of the `RawRepresentable`. If the decoding succeeds, it will try to create the `RawRepresentable` using [this initializer](https://developer.apple.com/documentation/swift/rawrepresentable/1538354-init). If there is any failure at any point, it will simply assign `fallback` to `self`.
  
  ```swift
  extension SafeDecodable where RawValue: Decodable {
@@ -154,6 +154,8 @@ let payments = try JSONDecoder()
 // Renders list of payments on the screen.
 render(payments: payments)
 ```
+
+Another option would be to set the fallback to an `.unknown` case and handle that case on the view model layer appropriately.
 
 ## Conclusion
 
