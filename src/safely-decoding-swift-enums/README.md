@@ -52,13 +52,13 @@ The decoding of this JSON would fail because the second `Payment` object has a w
 
 One single malformed `Payment` object made the payment screen unusable or worse, made the whole app crash. There are valid situations where we need to crash if we encounter such errors. For instances where we should not crash (like in our payment history screen), we need to somehow ignore the malformed objects in the payload or replace the malformed value with a fallback value.
 
-A common solutions is to make `type` optional and to manually implement the `Decodable` conformance.
+A common solutions is to make the enumeration optional and to manually implement the `Decodable` conformance.
 
 ```swift
 struct Payment {
     let id: String
     let amount: Double
-    let type: Type
+    let type: Type?
     
     enum Type: String, Decodable {
         case creditCard = "credit-card"
