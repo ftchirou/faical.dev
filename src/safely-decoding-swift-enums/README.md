@@ -1,8 +1,8 @@
-# Safely decoding Swift enumerations
+# Safely decode Swift enumerations
 
 The JSON format often serves as data exchange format between our iOS applications and server side APIs. For instance, an iOS application makes an HTTP request and a server replies with a JSON payload in the response. To convert the JSON payload into model objects, the model types first have to conform to [Decodable](https://developer.apple.com/documentation/swift/decodable) and then the payload is decoded using a [JSONDecoder](https://developer.apple.com/documentation/foundation/jsondecoder). Everything works well enough until we have to decode an [enumeration](https://docs.swift.org/swift-book/LanguageGuide/Enumerations.html). 
 
-The problem with decoding enumerations lie within the fact that an enumeration's value in JSON is often encoded as a simple raw value (e.g. a `string` or an `integer`). The set of all the possible raw values that we can potentially have in JSON is almost unlimited. Whereas in the Swift world, the set of valid values of an enumeration is limited by the `case`s declared when defining the enumeration. In real-world applications, server side errors happen and we sometimes receive malformed raw values, empty strings or `null` values in lieu of valid enumeration values.
+The problem with decoding enumerations lies within the fact that an enumeration's value in JSON is often encoded as a simple raw value (e.g. a `string` or an `integer`). The set of all the possible raw values that we can potentially have in JSON is almost unlimited. Whereas in the Swift world, the set of valid values of an enumeration is limited by the `case`s declared when defining the enumeration. In real-world applications, server side errors happen and we sometimes receive malformed raw values, empty strings or `null` values in lieu of valid enumeration values.
 
 In this article, we'll explore how to handle the unpredictability of an enumeration's value on the server side in the predictable world of Swift's enumerations.
 
@@ -132,7 +132,7 @@ struct Payment: Decodable {
     let amount: Double
     let type: Type
 
-    enum Type: String, Decodable {
+    enum Type: String, SafeDecodable {
         case creditCard = "credit-card"
         case debitCard = "debit-card"
         case cash
