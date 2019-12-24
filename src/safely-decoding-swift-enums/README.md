@@ -31,18 +31,18 @@ Now let's say we receive the following JSON seemingly containing all valid `Paym
 [
     {
         "id": "fxndavtw==",
-        "amount": 50.0
-        "type": "bank-account",
+        "amount": 50.0,
+        "type": "bank-account"
     },
     {
         "id": "kmZrlutz==",
-        "amount": 150.0
-        "type": "credit_card",
+        "amount": 150.0,
+        "type": "credit_card"
     },
     {
         "id": "imPrnafz==",
-        "amount": 75.0
-        "type": "credit-card",
+        "amount": 75.0,
+        "type": "credit-card"
     },
     ...
 ]
