@@ -9,7 +9,7 @@ Let's assume that we're building an app where at some point in the user journey,
 ```shell
 {
     "isSuccess": true,
-    "developerMessage": "The user's banking authority responded with a 200 response."
+    "developerMessage": "OK response received from the banking authority."
 }
 ```
 
@@ -78,7 +78,7 @@ func handlePaymentAttemptResult(_ result: PaymentAttemptResult) {
 }
 ```
 
-The code compiles but in both cases, we're equating the cases of `isSuccess` being `nil` to the payment attempts being unsuccessful and potentially prompting the user to retry again. However, `nil` here doesn't mean that the payment attempt was unsuccessful. It means *something bad happened on the server and we don't know whether the payment attempt was successful or not*. 
+The code compiles but in both cases, we're equating the cases of `isSuccess` being `nil` to the payment attempts being unsuccessful and potentially prompting the user to retry again. However, `nil` here doesn't mean that the payment attempt was unsuccessful. It means *something unexpected happened on the server and we don't know whether the payment attempt was successful or not*. 
 
 The right way to update `handlePaymentAttempt` is to handle the case of `nil` values separately.
 
