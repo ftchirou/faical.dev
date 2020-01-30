@@ -4,12 +4,12 @@ I have recently been thinking about good strategies to deal with the uncertainty
 
 ## The Problem
 
-Let's assume that we're building an app where at some point in the user journey, they can pay for goods provided throughout the app. Just for the sake of argument, let's assume that to handle payments, our app sends a `POST` request to a (very legacy) server and the server replies with a JSON response containing a boolean describing whether the payment was successful or not, and a message providing more technical context into the result of the operation.
+Let's assume that we're building an app where at some point in the user journey, they can pay for some service. Just for the sake of argument, let's assume that to handle payments, our app sends a `POST` request to a (very legacy) server and the server replies with a JSON response containing a boolean describing whether the payment was successful or not, and a message providing more technical context into the result of the operation.
 
 ```shell
 {
     "isSuccess": true,
-    "message": "The user's banking authority responded with a 200 response."
+    "developerMessage": "The user's banking authority responded with a 200 response."
 }
 ```
 
@@ -18,7 +18,7 @@ In our app's code, we would decode this response into a type similar to the one 
 ```swift
 struct PaymentAttemptResult: Decodable {
     let isSuccess: Bool
-    let message: String
+    let developerMessage: String
 }
 ```
 
@@ -34,12 +34,12 @@ func handlePaymentAttemptResult(_ result: PaymentAttemptResult) {
 }
 ```
 
-This works great until, for whatever reasoon, our legacy server starts sending the following response.
+This works great until, for whatever reason, our legacy server starts sending the following response.
 
 ```shell
 {
     "isSuccess": null
-    "message": ""
+    "developerMessage": ""
 }
 ```
 
@@ -48,11 +48,11 @@ Our app will suddenly start crashing with a `valueNotFound` error `Expected Bool
 ```swift
 struct PaymentAttemptResult {
     let isSuccess: Bool?
-    let message: String
+    let developerMessage: String
 }
 ```
 
-Now our app will no longer crash when we receive an unexpected `nil` but we can easily introduce a dangerous bug if we're not careful. 
+Now our app will no longer crash when we receive an unexpected `null` but we can easily introduce a dangerous bug if we're not careful. 
 
 To make our code compile, we would have to update our `handlePaymentAttemptResult` and it's very easy to do something like the following.
 
@@ -242,7 +242,7 @@ func == (lhs: Boolean, rhs: Boolean) -> Boolean {
     case (.true, .true):
         return .true
     case (.false, .false):
-        return .false
+        return .true
     case (.indeterminate, _):
         return .indeterminate
     case (_, .indeterminate):
@@ -257,7 +257,7 @@ func == (lhs: Boolean, rhs: Bool) -> Boolean {
     case (.true, true):
         return .true
     case (.false, false):
-        return .false
+        return .true
     case (.indeterminate, _):
         return .indeterminate
     default:
