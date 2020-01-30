@@ -1,6 +1,6 @@
 # Tri-State Booleans
 
-I have recently been thinking about good strategies to deal with the uncertainty involved in decoding JSON payloads, received from a server, into Swift models. In a previous article, I explored how we could [safely decode enumerations](../articles/safely-decode-swift-enums.html) in Swift. In this one, I want to take a look at [Bool](https://developer.apple.com/documentation/swift/bool) values in the same context.
+I have recently been thinking about good strategies to deal with the uncertainty involved in decoding JSON payloads, received from a server, into Swift models. In a previous article, I explored how we could safely [decode enumerations](../articles/safely-decode-swift-enums.html) in Swift. In this one, I want to take a look at [Bool](https://developer.apple.com/documentation/swift/bool) values in the same context.
 
 ## The Problem
 
