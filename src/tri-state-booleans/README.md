@@ -78,7 +78,7 @@ func handlePaymentAttemptResult(_ result: PaymentAttemptResult) {
 }
 ```
 
-The code compiles but in both cases, we're equating the cases of `isSuccess` being `nil` to the payment attempts being unsuccessful and potentially prompting the user to retry again. However, `nil` here doesn't mean that the payment attempt was unsuccessful. It means *something unexpected happened on the server and we don't know whether the payment attempt was successful or not*. 
+The code compiles but we're equating the cases of `isSuccess` being `nil` to the payment attempts being unsuccessful and potentially prompting the user to retry again. However, `nil` here doesn't mean that the payment attempt was unsuccessful. It means *something unexpected happened on the server and we don't know whether the payment attempt was successful or not*. 
 
 The right way to update `handlePaymentAttempt` is to handle the case of `nil` values separately.
 
@@ -143,7 +143,7 @@ func handlePaymentAttemptResult(_ result: PaymentAttemptResult) {
 }
 ```
 
-Et voilà! We have the compile time guarantee that external unexpected boolean values will be handled appropriately.
+Et voilà! We have the compile time guarantee that unexpected boolean values will be handled appropriately.
 
 We can go further and make our `Boolean` type nicer to use by conforming it to `ExpressibleByBooleanLiteral`.
 
@@ -217,7 +217,7 @@ func || (lhs: Bool, rhs: Boolean) -> Bool {
 }
 ```
 
-Adding a prefix `!` operator should be straightforward but this operator should return a value of type `Boolean` (not `Bool`) because we can not determine what the negation of `.inderminate` could be.
+Adding a prefix `!` operator should be straightforward but this operator should return a value of type `Boolean` (not `Bool`) because we don't know what the negation of `.indeterminate` is.
 
 ```swift
 prefix func ! (value: Boolean) -> Boolean {
@@ -273,6 +273,6 @@ func == (lhs: Bool, rhs: Boolean) -> Boolean {
 
 ## Conclusion
 
-When we decode externally encoded boolean values to `Bool` values in Swift, we need to pay special attention and make sure that malformed and `null` boolean values are properly handled. Using a tri-state boolean type gives us the guarantee at compile time that we are. What are your thoughts on this? What techniques do you use to handle unexpected boolean values in your JSON payloads? Feel free to get in touch on Twitter [@ftchirou](https://twitter.com/ftchirou/) to share them 🙂.
+When we decode JSON encoded boolean values to `Bool` values in Swift, in some situations we need to be extra careful and make sure that malformed and `null` boolean values are properly handled. Using a tri-state boolean type gives us the guarantee at compile time that those unexpected values are dealt with. What are your thoughts on this? What techniques do you use to handle unexpected boolean values in your JSON payloads? Feel free to get in touch on Twitter [@ftchirou](https://twitter.com/ftchirou/) to share them 🙂.
 
 Thanks for reading 👋.
