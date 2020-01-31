@@ -54,7 +54,7 @@ struct PaymentAttemptResult {
 
 Now our app will no longer crash when we receive an unexpected `null` but we can easily introduce a dangerous bug if we're not careful. 
 
-To make our code compile, we would have to update our `handlePaymentAttemptResult` and it's very easy to do something like the following.
+To make our code compile, we would have to update `handlePaymentAttemptResult` and it's very easy to do something like the following.
 
  ```swift
  func handlePaymentAttemptResult(_ result: PaymentAttemptResult) {
