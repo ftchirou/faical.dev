@@ -661,6 +661,4 @@ Using the [plethora of operators](https://developer.apple.com/documentation/comb
 
 We did not explore how to implement a practical `Store` but it is not fundamentally different from our `MovieStoreMock` implementation. The interesting part would be the implementation of `execute` where `Predicate` values need to be transformed into store-specific predicates (e.g. `NSPredicate` for CoreData, URL query parameters, or `WHERE` clauses for SQL based databases). Maybe the topic of a future article 😉.
 
-Do you have a comment, a suggestion or a question? Feel free to ping me on Twitter [@ftchirou](https://twitter.com/ftchirou).
-
 Thanks for reading 👋.

@@ -273,6 +273,6 @@ func == (lhs: Bool, rhs: Boolean) -> Boolean {
 
 ## Conclusion
 
-When we decode JSON encoded boolean values to `Bool` values in Swift, in some situations we need to be extra careful and make sure that malformed and `null` boolean values are properly handled. Using a tri-state boolean type gives us the guarantee at compile time that those unexpected values are dealt with. What are your thoughts on this? What techniques do you use to handle unexpected boolean values in your JSON payloads? Feel free to get in touch on Twitter [@ftchirou](https://twitter.com/ftchirou/) to share them 🙂.
+When we decode JSON encoded boolean values to `Bool` values in Swift, in some situations we need to be extra careful and make sure that malformed and `null` boolean values are properly handled. Using a tri-state boolean type gives us the guarantee at compile time that those unexpected values are dealt with.
 
 Thanks for reading 👋.

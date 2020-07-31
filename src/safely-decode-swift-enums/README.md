@@ -161,6 +161,4 @@ Another option would be to set the fallback to an `.unknown` case and handle tha
 
 In situations where we should recover when the decoding of an enumeration fails because of a malformed or wrong raw value, our solution above works pretty well. It can be used to set valid default values when malformed values are encountered or to replace them with sentinel values that can be filtered out a later time. In addition, this solution is opt-in; we only use it where it makes sense to.
 
-Do you have a question, a comment or a suggestion? What are the solutions you came up with to deal with malformed or wrong enumerations values in JSON? Feel free to get in touch on Twitter [@ftchirou](https://twitter.com/ftchirou/) to share them 🙂.
-
 Thanks for reading 👋.
