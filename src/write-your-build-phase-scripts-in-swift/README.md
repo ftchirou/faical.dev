@@ -179,6 +179,25 @@ func exitWithFailure() {
 
 Whenever `exitWithFailure()` is called during the execution of our script, Xcode will stop the overall build process and report a failure.
 
+## Handling asynchronous work
+
+If our script performs some asynchronous work (e.g. a network request), we can wait for the asynchronous work to complete before exiting the script's process by adding [`RunLoop.current.run()`](https://developer.apple.com/documentation/foundation/runloop/1412430-run) at the end of the main function.
+
+```swift
+import Foundation
+
+@struct MyScript {
+  static func main() {
+    URLSession.shared.dataTask(with: request) { _, _, _ in
+      Log.info("done!")
+      exitWithSuccess()
+    }
+    
+    RunLoop.current.run()
+  }
+}
+```
+
 ## Putting it all together
 
 Let's use all of the above to write a simple build phase script in Swift. For example, a script that concurrently downloads a bunch of JSON resources and persists them in the built products directory.
@@ -224,6 +243,8 @@ struct MyScript {
       Log.info("done!")
       exitWithSuccess()
     }
+    
+    RunLoop.current.run()
   }
 }
 
