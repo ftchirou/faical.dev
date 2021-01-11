@@ -186,7 +186,8 @@ If our script performs some asynchronous work (e.g. a network request), we can w
 ```swift
 import Foundation
 
-@struct MyScript {
+@main
+struct MyScript {
   static func main() {
     URLSession.shared.dataTask(with: request) { _, _, _ in
       Log.info("done!")
