@@ -2,7 +2,7 @@
 
 In non-trivial iOS/macOS projects, it's not uncommon to have one or more build phases that execute some scripts. The de-facto language for writing those scripts is Bash or Bash-like (sometimes Python or Perl). However, if you're already a Swift developer and you have a *non-trivial script* to run as a build phase, Swift is a perfectly fine and arguably better alternative. 
 
-When writing Swift scripts, beside the niceness of the language and the type-safety it affords, we have access to powerful Foundation APIs for performing network requests, encoding and decoding JSON, writing concurrent code, accessing the file system, handling errors, etc. 
+When writing Swift scripts, beside the niceness of the language and the type-safety it affords, we have access to powerful Foundation APIs. These APIs come in handy for performing network requests, encoding and decoding JSON, writing concurrent code, accessing the file system, handling errors, etc. 
 
 While it's easy enough to write build phase scripts in Swift, we'll explore some good practices and a few considerations and gotchas to keep in mind.
 
@@ -117,15 +117,15 @@ struct MyScript {
 
 enum Log {
   static func info(_ message: String) {
-    FileHandle.standardOutput.write("[INFO] \(message)\n".utf8Data)
+    FileHandle.standardOutput.write("\(Date()) [INFO] \(message)\n".utf8Data)
   }
 
   static func success(_ message: String) {
-    FileHandle.standardOutput.write("[SUCCESS] \(message)\n".utf8Data)
+    FileHandle.standardOutput.write("\(Date()) [SUCCESS] \(message)\n".utf8Data)
   }
 
   static func failure(_ message: String) {
-    FileHandle.standardError.write("[FAILURE] \(message)\n".utf8Data)
+    FileHandle.standardError.write("\(Date()) [FAILURE] \(message)\n".utf8Data)
   }
 }
 
